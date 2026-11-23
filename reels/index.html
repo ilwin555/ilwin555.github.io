@@ -15,7 +15,7 @@
    PICTURE: one tall card with a soft creator-tinted face, a big play button, the next card peeking behind
    COLOUR and TYPE: near-black stage, warm white ink, one coral accent for "yes"; SF system type
    LAYOUT: slim glass top bar, centered deck sized to the screen height, two round action buttons under it */
-:root{--bg:#09090b;--card:#141417;--ink:#f7f4f2;--mute:#9b979f;--line:#25232a;--hot:#ff4d5e;--ok:#3ddc97;--r:30px}
+:root{--bg:#0b0b0c;--card:#151516;--ink:#f3f0ea;--mute:#98948c;--line:#28272a;--hot:#ece5d8;--ok:#ece5d8;--r:24px}
 *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",system-ui,sans-serif;overscroll-behavior:none;overflow:hidden;-webkit-font-smoothing:antialiased}
 body{display:flex;flex-direction:column;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left)}
@@ -63,6 +63,20 @@ textarea{width:100%;min-height:90px;background:var(--bg);color:var(--ink);border
 .toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 64px);transform:translate(-50%,-20px);opacity:0;background:#fff;color:#111;padding:10px 16px;border-radius:999px;font-weight:600;font-size:14px;transition:.25s;z-index:40;pointer-events:none}.toast.on{opacity:1;transform:translate(-50%,0)}
 :focus-visible{outline:3px solid var(--hot);outline-offset:3px}
 @media (prefers-reduced-motion:reduce){.card,.toast{transition:none}}
+/* quiet premium layer: one ivory accent, hairlines, no glow */
+.top{padding:16px 20px}.brand{font-size:17px;font-weight:600}
+.pill{height:40px;background:none;border-color:var(--line);font-weight:500;font-size:14px;backdrop-filter:none}
+.face{padding:24px;background:linear-gradient(180deg,hsl(var(--h) 8% 20%),#111112 75%)}.face:before{display:none}
+.who{padding:0;top:22px;left:24px;background:none;backdrop-filter:none;font-weight:500;color:#ffffffd9}
+.playbtn{width:68px;height:68px;margin:-34px 0 0 -34px;background:#ffffff14;color:#fff;border:1px solid #ffffff40;box-shadow:none}
+.playbtn svg{width:26px;height:26px}.cap{font-weight:500}.stats{font-variant-numeric:tabular-nums}
+.pos{bottom:-24px}.stage{padding-bottom:28px}
+.act{width:60px;height:60px;background:none;border-color:#ffffff26}.act.no{color:var(--ink)}
+.act.yes{width:68px;height:68px;color:#141414;box-shadow:none}.act svg{width:25px;height:25px}
+.act.sm{width:46px;height:46px;border-color:transparent}
+.btn.hot{color:#141414}.chip{border-width:1px;font-weight:500}.chip[aria-pressed=true]{background:var(--hot);color:#141414}
+.stamp{border-width:2px;font-size:20px;font-weight:600;border-radius:10px}.stamp.no{color:var(--ink)}
+.panel h2{font-size:21px;font-weight:600}
 </style>
 </head>
 <body>
@@ -298,7 +312,7 @@ for(const [c,t] of Object.entries(RAW))for(const line of t.split('\n')){const [i
 const lsGet=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||'null')??d}catch{return d}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
 let P=lsGet('picks2',{}),seen=new Set(lsGet('seen',[])),F=lsGet('filt2',{c:'',s:'likes',m:'0',p:'0'});
-let deck=[],i=0,hist=[],curModel='Kayla';const MODELS=['Kayla','Winnie','Lila'];
+let deck=[],i=0,hist=[],curModel='Kayla 2';const MODELS=['Kayla 2','Kayla 3','Kayla 4','Arianna 2','Snowy K','Brianna','Rae'];
 const toast=t=>{const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),1800)};
 
 function build(){
@@ -327,8 +341,9 @@ function bar(){$('#cnt').textContent=Object.keys(P).length;$('#bUndo').disabled=
 let busy=false;
 function attach(el){
   let sx=0,sy=0,dx=0,on=false,moved=false;
-  el.addEventListener('pointerdown',e=>{if(busy||e.target.closest('iframe')||el.querySelector('.vid'))return;on=true;moved=false;sx=e.clientX;sy=e.clientY;dx=0;el.classList.add('drag');el.setPointerCapture(e.pointerId)});
-  el.addEventListener('pointermove',e=>{if(!on)return;dx=e.clientX-sx;const dy=(e.clientY-sy)*.25;if(Math.abs(dx)>6)moved=true;el.style.transform='translate('+dx+'px,'+dy+'px) rotate('+dx/18+'deg)';const y=el.querySelector('.yes'),n=el.querySelector('.no');y.style.opacity=Math.max(0,Math.min(1,dx/110));n.style.opacity=Math.max(0,Math.min(1,-dx/110))});
+  el.addEventListener('pointerdown',e=>{if(busy||e.target.closest('iframe')||el.querySelector('.vid'))return;on=true;moved=false;sx=e.clientX;sy=e.clientY;dx=0;el.classList.add('drag')});
+  /* capture only once it is a drag: capturing on press sends the click to the card, not the Play button */
+  el.addEventListener('pointermove',e=>{if(!on)return;if(!e.buttons){end();return}dx=e.clientX-sx;const dy=(e.clientY-sy)*.25;if(!moved&&Math.hypot(dx,e.clientY-sy)>6){moved=true;el.setPointerCapture(e.pointerId)}if(!moved)return;el.style.transform='translate('+dx+'px,'+dy+'px) rotate('+dx/18+'deg)';const y=el.querySelector('.yes'),n=el.querySelector('.no');y.style.opacity=Math.max(0,Math.min(1,dx/110));n.style.opacity=Math.max(0,Math.min(1,-dx/110))});
   const end=()=>{if(!on)return;on=false;el.classList.remove('drag');
     if(dx>110){el.style.transform='';el.querySelector('.yes').style.opacity=0;openR()}
     else if(dx<-110){fly(el,-1,'pass')}
@@ -343,6 +358,7 @@ function fly(el,dir,kind){
   setTimeout(()=>{if(kind==='pass'){hist.push({id:r.id,kind:'pass'});seen.add(r.id);lsSet('seen',[...seen])}else hist.push({id:r.id,kind:'yes'});i++;busy=false;draw()},280);
 }
 function play(el){
+  if(el.querySelector('.vid'))return;
   const id=el.dataset.id;const f=el.querySelector('.face');
   const v=document.createElement('div');v.className='vid';v.innerHTML='<iframe src="https://www.instagram.com/reel/'+id+'/embed/" allow="autoplay; encrypted-media" title="Reel"></iframe>';
   el.appendChild(v);
