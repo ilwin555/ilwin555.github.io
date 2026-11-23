@@ -2,76 +2,106 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Reels Player</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Reels">
+<meta name="theme-color" content="#09090b">
+<title>Reels Deck</title>
 <style>
-:root{color-scheme:dark;--bg:#0c0b0d;--card:#17151a;--ink:#f5f3f6;--mute:#9d97a3;--line:#29262d;--hot:#ff4d5e}
-*{box-sizing:border-box;min-width:0}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,Segoe UI,sans-serif;padding-bottom:130px}
-.top{position:sticky;top:0;z-index:5;background:rgba(12,11,13,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:12px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-h1{font-size:20px;margin:0 8px 0 0}
-select,button{font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:12px;min-height:44px;padding:0 12px}
-button{cursor:pointer;font-weight:600}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;padding:16px;max-width:1300px;margin:0 auto}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
-.thumb{position:relative;background:linear-gradient(160deg,#3a1f2a,#120f16 60%,#1d1626);display:grid;place-items:center;border:0;border-radius:0;width:100%;padding:0}
-.thumb .play{width:64px;height:64px;border-radius:50%;background:var(--hot);display:grid;place-items:center;font-size:26px;padding-left:5px}
-.thumb .who{position:absolute;left:12px;top:10px;font-weight:700;font-size:14px;background:rgba(0,0,0,.5);padding:4px 10px;border-radius:999px}
-.thumb .st{position:absolute;left:12px;bottom:10px;font-size:13px;color:#fff;opacity:.9}
-.vid{position:relative;width:100%;aspect-ratio:3/4.95;overflow:hidden;background:#000}
-.vid iframe{position:absolute;border:0;width:147%;left:-23.5%;top:-80px;height:1000px;background:#000}
-.nope{aspect-ratio:3/4.95;display:grid;place-items:center;text-align:center;padding:16px;color:var(--mute);font-size:14px;background:#111}
-.nope a{display:inline-block;margin-top:10px;color:#fff;border:1px solid #555;padding:10px 14px;border-radius:999px;text-decoration:none;font-weight:600}
-.thumb{aspect-ratio:3/4.95}
-.info{padding:10px 12px;display:grid;gap:8px}
-.cap{font-size:14px;color:var(--mute);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.9em}
-.row{display:flex;gap:8px}.row button{flex:1}
-.sel{background:var(--hot);border-color:var(--hot);color:#fff}
-.bar{position:fixed;left:0;right:0;bottom:0;z-index:9;background:#17151aee;border-top:1px solid var(--line);padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.bar b{margin-right:auto}
-textarea{width:100%;min-height:90px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:8px;font:13px monospace;display:none}
-.sheet{position:fixed;inset:0;z-index:20;display:none;place-items:end center;background:rgba(0,0,0,.6)}.sheet.open{display:grid}
-.panel{width:min(520px,100%);background:var(--card);border-radius:22px 22px 0 0;padding:20px 18px 24px;display:grid;gap:14px;max-height:92vh;overflow:auto}
-.panel h2{margin:0;font-size:22px}.mute{color:var(--mute);font-size:14px}.lbl{font-size:14px;font-weight:600;display:grid;gap:6px}
-.models{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}.models button{min-height:56px;text-align:left}
-.models button[aria-pressed=true]{border-color:var(--hot);background:#ff4d5e22}
-.panel input{min-height:46px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:0 12px;font:inherit}
-.foot{display:flex;gap:8px}.foot button{flex:1}.foot .hot{background:var(--hot);border-color:var(--hot);color:#fff;flex:2}
-.note{padding:0 16px;color:var(--mute);font-size:14px;max-width:1300px;margin:12px auto 0}
-:focus-visible{outline:3px solid var(--hot);outline-offset:2px}
+/* VOICE: a private casting app, calm and expensive, one decision at a time
+   IDEA: a card deck. The reel is the card; swipe right to recreate, left to pass
+   PICTURE: one tall card with a soft creator-tinted face, a big play button, the next card peeking behind
+   COLOUR and TYPE: near-black stage, warm white ink, one coral accent for "yes"; SF system type
+   LAYOUT: slim glass top bar, centered deck sized to the screen height, two round action buttons under it */
+:root{--bg:#09090b;--card:#141417;--ink:#f7f4f2;--mute:#9b979f;--line:#25232a;--hot:#ff4d5e;--ok:#3ddc97;--r:30px}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",system-ui,sans-serif;overscroll-behavior:none;overflow:hidden;-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left)}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;-webkit-user-select:none;user-select:none}
+.top{display:flex;align-items:center;gap:8px;padding:10px 14px}
+.brand{font-weight:700;font-size:20px;letter-spacing:-.02em;margin-right:auto}
+.pill{display:flex;align-items:center;gap:6px;height:42px;padding:0 14px;border-radius:999px;background:#ffffff0f;border:1px solid #ffffff14;font-weight:600;font-size:15px;backdrop-filter:blur(12px)}
+.pill svg{width:18px;height:18px}.pill b{color:var(--hot)}
+.stage{position:relative;flex:1;display:grid;place-items:center;padding:4px 0 8px;min-height:0}
+.deck{position:relative;width:min(92vw,calc((100dvh - 250px - env(safe-area-inset-top) - env(safe-area-inset-bottom))*3/4.95),440px);aspect-ratio:3/4.95}
+.card{position:absolute;inset:0;border-radius:var(--r);overflow:hidden;background:var(--card);box-shadow:0 30px 60px -28px #000,0 0 0 1px #ffffff12 inset;touch-action:none;will-change:transform;transition:transform .32s cubic-bezier(.2,.8,.2,1),opacity .32s}
+.card.back{transform:scale(.94) translateY(16px);opacity:.55;pointer-events:none}
+.card.drag{transition:none}
+.face{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:22px 20px 22px;background:linear-gradient(165deg,hsl(var(--h) 38% 24%),hsl(calc(var(--h) + 50) 32% 9%) 70%)}
+.face:before{content:"";position:absolute;inset:0;background:radial-gradient(120% 60% at 50% 0%,#ffffff1f,transparent 60%)}
+.who{position:absolute;top:18px;left:18px;font-weight:700;font-size:15px;padding:7px 13px;border-radius:999px;background:#0006;backdrop-filter:blur(10px)}
+.playbtn{position:absolute;left:50%;top:44%;width:84px;height:84px;margin:-42px 0 0 -42px;border-radius:50%;background:#fff;color:#111;display:grid;place-items:center;box-shadow:0 16px 40px -10px #000a}
+.playbtn svg{width:34px;height:34px;margin-left:4px}
+.meta{position:relative}.cap{font-size:20px;font-weight:600;line-height:1.25;letter-spacing:-.01em;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:10px;text-wrap:balance}
+.stats{display:flex;gap:14px;color:#ffffffc7;font-size:14px;font-weight:500;white-space:nowrap}
+.vid{position:absolute;inset:0;background:#000}.vid iframe{position:absolute;border:0;width:147%;left:-23.5%;top:-80px;height:1000px}
+.nope{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:28px;background:#0c0c0f;color:var(--mute)}
+.nope a{display:inline-block;margin-top:14px;color:#fff;background:#ffffff14;padding:12px 18px;border-radius:999px;text-decoration:none;font-weight:600}
+.stamp{position:absolute;top:70px;font-weight:800;font-size:28px;letter-spacing:.04em;padding:6px 14px;border:4px solid;border-radius:14px;opacity:0;pointer-events:none}
+.stamp.yes{right:20px;color:var(--ok);transform:rotate(14deg)}.stamp.no{left:20px;color:#ff8a94;transform:rotate(-14deg)}
+.actions{display:flex;justify-content:center;align-items:center;gap:22px;padding:6px 0 calc(14px + env(safe-area-inset-bottom))}
+.act{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:#ffffff0d;border:1px solid #ffffff1c;transition:transform .12s}
+.act:active{transform:scale(.92)}.act svg{width:30px;height:30px}
+.act.no{color:#ff8a94}.act.yes{width:78px;height:78px;background:var(--hot);border-color:var(--hot);color:#fff;box-shadow:0 18px 36px -14px var(--hot)}
+.act.sm{width:50px;height:50px;color:var(--mute)}.act.sm svg{width:22px;height:22px}.act:disabled{opacity:.3}
+.pos{position:absolute;bottom:2px;font-size:13px;color:var(--mute);font-weight:500}
+.end{text-align:center;padding:30px;color:var(--mute)}.end h2{color:var(--ink);margin:0 0 8px;font-size:24px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 20px;border-radius:14px;background:#ffffff12;border:1px solid #ffffff1c;font-weight:600;margin:6px 4px}
+.btn.hot{background:var(--hot);border-color:var(--hot);color:#fff}
+.sheet{position:fixed;inset:0;z-index:30;display:none;place-items:end center;background:#000a;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}.sheet.open{display:grid}
+.panel{width:min(540px,100%);background:#17161a;border-radius:28px 28px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom));display:grid;gap:14px;max-height:90dvh;overflow:auto;border:1px solid #ffffff12;border-bottom:0}
+.panel h2{margin:0;font-size:24px;letter-spacing:-.02em}.mute{color:var(--mute);font-size:14px}.lbl{font-size:14px;font-weight:600;display:grid;gap:8px}
+.chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.chip{min-height:54px;border-radius:14px;border:2px solid var(--line);font-weight:600}.chip[aria-pressed=true]{border-color:var(--hot);background:#ff4d5e22}
+.panel select,.panel input{min-height:50px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:0 14px;font-size:16px;width:100%}
+.foot{display:flex;gap:8px}.foot .btn{flex:1;margin:0}.foot .hot{flex:2}
+.item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.item div{flex:1}.item small{display:block;color:var(--mute)}
+.item button{color:var(--mute);padding:8px}
+textarea{width:100%;min-height:90px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:10px;font:13px ui-monospace,monospace;display:none}
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 64px);transform:translate(-50%,-20px);opacity:0;background:#fff;color:#111;padding:10px 16px;border-radius:999px;font-weight:600;font-size:14px;transition:.25s;z-index:40;pointer-events:none}.toast.on{opacity:1;transform:translate(-50%,0)}
+:focus-visible{outline:3px solid var(--hot);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){.card,.toast{transition:none}}
 </style>
 </head>
 <body>
-<div class="top">
-  <h1>Reels Player</h1>
-  <select id="fc" aria-label="Creator"></select>
-  <select id="fs" aria-label="Sort"><option value="likes">Most likes</option><option value="views">Most views</option><option value="orig">As saved</option></select>
-  <select id="fp" aria-label="Playable"><option value="1">Playable only</option><option value="0">Include unplayable</option></select>
-  <select id="fm" aria-label="Minimum likes"><option value="0">Any likes</option><option value="1000">1K+ likes</option><option value="5000">5K+ likes</option><option value="20000">20K+ likes</option></select>
-</div>
-<p class="note">Tap a card to play it here. 119 of the 183 play; the other 64 have embedding turned off by Instagram and open on Instagram instead. Tap Recreate on the ones you want, choose the model and outfit, then Copy list and paste it to me.</p>
-<main class="grid" id="grid"></main>
-
-<div class="bar">
-  <b id="cnt">0 picked</b>
-  <button id="copy">Copy list</button><button id="clear">Clear</button>
-  <textarea id="out" readonly></textarea>
+<header class="top">
+  <div class="brand">Reels</div>
+  <button class="pill" id="bFilter" aria-label="Filters"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filter</button>
+  <button class="pill" id="bList" aria-label="Your list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.4-9.3-9A5.4 5.4 0 0 1 12 6a5.4 5.4 0 0 1 9.3 6c-2.3 4.6-9.3 9-9.3 9z"/></svg><b id="cnt">0</b></button>
+</header>
+<main class="stage"><div class="deck" id="deck"></div></main>
+<div class="actions">
+  <button class="act sm" id="bUndo" aria-label="Undo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
+  <button class="act no" id="bNo" aria-label="Pass"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  <button class="act yes" id="bYes" aria-label="Recreate this"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.4-9.3-9A5.4 5.4 0 0 1 12 6a5.4 5.4 0 0 1 9.3 6c-2.3 4.6-9.3 9-9.3 9z"/></svg></button>
+  <button class="act sm" id="bOpen" aria-label="Open on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4 10 14M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></button>
 </div>
 
-<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t">
-  <div class="panel">
-    <h2 id="sh-t">Recreate this reel</h2>
-    <div id="sh-src" class="mute"></div>
-    <div><div class="lbl">Model</div><div class="models" id="sh-models"></div></div>
-    <label class="lbl">Outfit
-      <select id="sh-outfit"><option value="1">Outfit 1</option><option value="2">Outfit 2</option><option value="3">Outfit 3</option></select>
-    </label>
-    <label class="lbl">Notes (optional)
-      <input type="text" id="sh-note" maxlength="200" placeholder="e.g. keep the car background">
-    </label>
-    <div class="foot"><button id="sh-remove">Remove</button><button id="sh-cancel">Cancel</button><button id="sh-add" class="hot">Add to list</button></div>
-  </div>
-</div>
+<div class="sheet" id="shR" role="dialog" aria-modal="true" aria-labelledby="shR-t"><div class="panel">
+  <h2 id="shR-t">Recreate this reel</h2><div class="mute" id="shR-src"></div>
+  <div><div class="lbl" style="margin-bottom:8px">Model</div><div class="chips" id="shR-m"></div></div>
+  <label class="lbl">Outfit<select id="shR-o"><option value="1">Outfit 1</option><option value="2">Outfit 2</option><option value="3">Outfit 3</option></select></label>
+  <label class="lbl">Notes (optional)<input id="shR-n" maxlength="200" placeholder="e.g. keep the car background"></label>
+  <div class="foot"><button class="btn" id="shR-x">Cancel</button><button class="btn hot" id="shR-ok">Add to list</button></div>
+</div></div>
+
+<div class="sheet" id="shF" role="dialog" aria-modal="true" aria-label="Filters"><div class="panel">
+  <h2>Filter the deck</h2>
+  <label class="lbl">Creator<select id="fC"></select></label>
+  <label class="lbl">Sort<select id="fS"><option value="likes">Most likes first</option><option value="views">Most views first</option><option value="orig">As saved</option></select></label>
+  <label class="lbl">Minimum likes<select id="fM"><option value="0">Any</option><option value="1000">1K+</option><option value="5000">5K+</option><option value="20000">20K+</option></select></label>
+  <label class="lbl">Reels that can't play here<select id="fP"><option value="1">Hide them</option><option value="0">Show them (opens Instagram)</option></select></label>
+  <div class="foot"><button class="btn hot" id="shF-ok">Show deck</button></div>
+</div></div>
+
+<div class="sheet" id="shL" role="dialog" aria-modal="true" aria-label="Your list"><div class="panel">
+  <h2>Your list</h2><div id="lst"></div><textarea id="out" readonly></textarea>
+  <div class="foot"><button class="btn" id="shL-clear">Clear</button><button class="btn" id="shL-x">Close</button><button class="btn hot" id="shL-copy">Copy list</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
 <script>
 {
 const RAW={
@@ -258,61 +288,103 @@ DgGIoQ_TDTY|25|3.4K|I guess I’m flattered lol
 DgGJ7x2zkGd|15|1.5K|Yeah we still exist lol
 DgGJFplTnLg|24|2.3K|He looked way too surprised 💀
 DgGKANiTOqf|11|1.4K|I can spoil him too, you know`};
-
 const BLOCKED=new Set(`Dd-xn_NseM2 Dd063kos9nc Dd5hCufMIxC Dd8D31cMkGB DdtFPiCS7Oe De0mxIXxM1e De1uRihMFyu De4iCnqRBuY De59BKBSqJx DeDA5oLRUzk DeDDr4ksH1P DeIv2R4SPXr DeNfW1yMG2q DePUPJPxJMK DeShFpWS-zT DeSjw7Ss_yc DeTIV_6sWkF DeWnmrmsMIA DecYJTBsksI DeiQGk7sSQC Dek1YItMR41 DeprhkyMcd- Derx-EsMMaW DeuHh4DRlVl DezGOmnRooB DfBhyMqR0Gn DfG9SXROrUf DfKAjUFMWNe DfL79Sryr-4 DfLIe9qyYNs DfPtK2EM3y5 DfQ8ivSxBkI DfXdE2rSbRT DfaQ5ECs-lO DfcjePORp4j Dfd0y7HvlbW DfoNQ87Rxwn Dfv77AdS1Z- Df-5ysoMqkZ DffZyLdt_mD Df_NN3LuMH9 Df_NPRBO1cu DgB3ZWwOs-f Df35F4OvhrS Df59yn0t5uL Df_QaMKNQ0_ DftJysKNF9k Dfv3Z06tApX DfyfCCWtE5E Df3GPexA_Mm Df8TBgboBJf Df8c0qOI8bt Df_Hw4QCmqm Df_PIHoIiYq DgBTefjgviR DgBZJmHoHjU DgBfhsJInAZ DgBmzbkoNcE DgBskggI2V0 DgETpnHIM9G DgEc_w8IWDv DgGHSBATz__ DgGHmqwztPn DgGI0KMzpIw`.split(' '));
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=s=>{if(!s)return 0;const m=String(s).replace(/,/g,'').match(/^([\d.]+)([KM]?)$/);return m?parseFloat(m[1])*(m[2]==='M'?1e6:m[2]==='K'?1e3:1):0};
 const fmt=n=>n>=1e6?(n/1e6).toFixed(1).replace(/\.0$/,'')+'M':n>=1e3?(n/1e3).toFixed(1).replace(/\.0$/,'')+'K':String(n);
 const R=[];let k=0;
-for(const [c,t] of Object.entries(RAW))for(const line of t.split('\n')){const [id,likes,views,...cap]=line.split('|');R.push({id,c,likes:+likes||0,views:views||'',v:num(views),cap:cap.join('|'),o:k++})}
-const $=s=>document.querySelector(s);
-let P={};try{P=JSON.parse(localStorage.getItem('picks2')||'{}')}catch{}
-const save=()=>{try{localStorage.setItem('picks2',JSON.stringify(P))}catch{}};
-const MODELS=['Kayla','Winnie','Lila'];let curId=null,curModel='Kayla';
-const cs=[...new Set(R.map(r=>r.c))];
-$('#fc').innerHTML='<option value="">All creators ('+R.length+')</option>'+cs.map(c=>'<option value="'+c+'">@'+c+' ('+R.filter(r=>r.c===c).length+')</option>').join('');
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+for(const [c,t] of Object.entries(RAW))for(const line of t.split('\n')){const [id,likes,views,...cap]=line.split('|');R.push({id,c,likes:+likes||0,views:views||'',v:num(views),cap:cap.join('|'),o:k++,h:[...c].reduce((a,ch)=>a*31+ch.charCodeAt(0),7)%360})}
+const lsGet=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||'null')??d}catch{return d}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
+let P=lsGet('picks2',{}),seen=new Set(lsGet('seen',[])),F=lsGet('filt',{c:'',s:'likes',m:'0',p:'1'});
+let deck=[],i=0,hist=[],curModel='Kayla';const MODELS=['Kayla','Winnie','Lila'];
+const toast=t=>{const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),1800)};
 
-function render(){
-  const c=$('#fc').value,s=$('#fs').value,m=+$('#fm').value;
-  const po=$('#fp').value==='1';let l=R.filter(r=>(!c||r.c===c)&&r.likes>=m&&(!po||!BLOCKED.has(r.id)));
-  l.sort(s==='likes'?(a,b)=>b.likes-a.likes:s==='views'?(a,b)=>b.v-a.v:(a,b)=>a.o-b.o);
-  $('#grid').innerHTML=l.length?l.map(r=>'<div class="card" data-id="'+esc(r.id)+'">'+(BLOCKED.has(r.id)?'<div class="nope"><div>@'+esc(r.c)+' turned off playing this one outside Instagram.<br>♥ '+fmt(r.likes)+(r.views?' · ▶ '+esc(r.views):'')+'<br><a href="https://www.instagram.com/reel/'+esc(r.id)+'/" target="_blank" rel="noopener">Open on Instagram</a></div></div>':'<button class="thumb" data-play="'+esc(r.id)+'" aria-label="Play reel by '+esc(r.c)+'"><span class="who">@'+esc(r.c)+'</span><span class="play">▶</span><span class="st">♥ '+fmt(r.likes)+(r.views?' · ▶ '+esc(r.views):'')+'</span></button>')+'<div class="info"><div class="cap">'+esc(r.cap)+'</div><div class="row"><button data-pick="'+esc(r.id)+'" class="'+(P[r.id]?'sel':'')+'">'+(P[r.id]?'✓ '+esc(P[r.id].model)+' · Outfit '+esc(P[r.id].outfit):'Recreate')+'</button></div></div></div>').join(''):'<p class="note">Nothing matches that filter.</p>';
+function build(){
+  let l=R.filter(r=>(!F.c||r.c===F.c)&&r.likes>=+F.m&&(F.p==='0'||!BLOCKED.has(r.id))&&!seen.has(r.id));
+  l.sort(F.s==='likes'?(a,b)=>b.likes-a.likes:F.s==='views'?(a,b)=>b.v-a.v:(a,b)=>a.o-b.o);
+  deck=l;i=0;hist=[];draw();
 }
-function bar(){
-  const n=Object.keys(P).length;$('#cnt').textContent=n+' picked';
-  const ta=$('#out');if(!n)ta.style.display='none';
+function cardHTML(r){
+  const blocked=BLOCKED.has(r.id);
+  return '<div class="face" style="--h:'+r.h+'"><span class="who">@'+esc(r.c)+'</span>'+
+    (blocked?'<div class="nope"><div>@'+esc(r.c)+' turned off playing this one outside Instagram.<br><a href="https://www.instagram.com/reel/'+esc(r.id)+'/" target="_blank" rel="noopener">Open on Instagram</a></div></div>':'<button class="playbtn" data-play aria-label="Play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg></button>')+
+    '<div class="meta"><div class="cap">'+esc(r.cap||'')+'</div><div class="stats"><span>♥ '+fmt(r.likes)+'</span>'+(r.views?'<span>▶ '+esc(r.views)+'</span>':'')+'</div></div></div>'+
+    '<span class="stamp yes">RECREATE</span><span class="stamp no">PASS</span>';
 }
-function listText(){
-  return 'Recreate these:\n'+Object.entries(P).map(([id,v])=>{const r=R.find(x=>x.id===id);return 'https://www.instagram.com/reel/'+id+'/ (@'+(r?r.c:'?')+') - '+v.model+', outfit '+v.outfit+(v.note?' - '+v.note:'')}).join('\n');
+function draw(){
+  const d=$('#deck');
+  if(i>=deck.length){d.innerHTML='<div class="end"><h2>That\'s the deck</h2><p>'+(Object.keys(P).length?'You picked '+Object.keys(P).length+'. Copy the list and send it to me.':'Nothing picked yet.')+'</p><button class="btn hot" id="bList2">Open my list</button><button class="btn" id="bAgain">Start over</button></div>';bar();return}
+  const cur=deck[i],nxt=deck[i+1];
+  d.innerHTML=(nxt?'<div class="card back" data-id="'+esc(nxt.id)+'">'+cardHTML(nxt).replace(/data-play/,'')+'</div>':'')+'<div class="card" id="top" data-id="'+esc(cur.id)+'">'+cardHTML(cur)+'</div><div class="pos" style="left:0;right:0;text-align:center">'+(i+1)+' of '+deck.length+'</div>';
+  attach($('#top'));bar();
 }
-function openSheet(id){
-  curId=id;const r=R.find(x=>x.id===id),ex=P[id];curModel=ex?ex.model:curModel;
-  $('#sh-src').textContent='@'+r.c+' · ♥ '+fmt(r.likes)+(r.views?' · ▶ '+r.views:'');
-  $('#sh-models').innerHTML=MODELS.map(m=>'<button data-m="'+m+'" aria-pressed="'+(m===curModel)+'">'+m+'</button>').join('');
-  $('#sh-outfit').value=ex?ex.outfit:($('#sh-outfit').value||'1');$('#sh-note').value=ex?ex.note:'';
-  $('#sh-remove').style.display=ex?'':'none';$('#sheet').classList.add('open');
+function bar(){$('#cnt').textContent=Object.keys(P).length;$('#bUndo').disabled=!hist.length;const ended=i>=deck.length;$('#bNo').disabled=ended;$('#bYes').disabled=ended;$('#bOpen').disabled=ended}
+
+/* swipe */
+let busy=false;
+function attach(el){
+  let sx=0,sy=0,dx=0,on=false,moved=false;
+  el.addEventListener('pointerdown',e=>{if(busy||e.target.closest('iframe')||el.querySelector('.vid'))return;on=true;moved=false;sx=e.clientX;sy=e.clientY;dx=0;el.classList.add('drag');el.setPointerCapture(e.pointerId)});
+  el.addEventListener('pointermove',e=>{if(!on)return;dx=e.clientX-sx;const dy=(e.clientY-sy)*.25;if(Math.abs(dx)>6)moved=true;el.style.transform='translate('+dx+'px,'+dy+'px) rotate('+dx/18+'deg)';const y=el.querySelector('.yes'),n=el.querySelector('.no');y.style.opacity=Math.max(0,Math.min(1,dx/110));n.style.opacity=Math.max(0,Math.min(1,-dx/110))});
+  const end=()=>{if(!on)return;on=false;el.classList.remove('drag');
+    if(dx>110){el.style.transform='';el.querySelector('.yes').style.opacity=0;openR()}
+    else if(dx<-110){fly(el,-1,'pass')}
+    else{el.style.transform='';el.querySelectorAll('.stamp').forEach(s=>s.style.opacity=0)}
+    if(moved)el._moved=true;setTimeout(()=>el._moved=false,0)};
+  el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
+  el.addEventListener('click',e=>{if(el._moved)return;const b=e.target.closest('[data-play]');if(b)play(el)});
 }
-const closeSheet=()=>{$('#sheet').classList.remove('open');curId=null};
-function refreshBtn(id){const b=document.querySelector('[data-pick="'+CSS.escape(id)+'"]');if(!b)return;const v=P[id];b.classList.toggle('sel',!!v);b.textContent=v?'✓ '+v.model+' · Outfit '+v.outfit:'Recreate'}
+function fly(el,dir,kind){
+  if(busy)return;busy=true;const r=deck[i];
+  el.classList.remove('drag');el.style.transform='translate('+dir*window.innerWidth+'px,40px) rotate('+dir*22+'deg)';el.style.opacity='0';
+  setTimeout(()=>{if(kind==='pass'){hist.push({id:r.id,kind:'pass'});seen.add(r.id);lsSet('seen',[...seen])}else hist.push({id:r.id,kind:'yes'});i++;busy=false;draw()},280);
+}
+function play(el){
+  const id=el.dataset.id;const f=el.querySelector('.face');
+  const v=document.createElement('div');v.className='vid';v.innerHTML='<iframe src="https://www.instagram.com/reel/'+id+'/embed/" allow="autoplay; encrypted-media" title="Reel"></iframe>';
+  el.appendChild(v);
+}
+/* sheets */
+const open=id=>$('#'+id).classList.add('open'),shut=id=>$('#'+id).classList.remove('open');
+function openR(){
+  if(i>=deck.length)return;const r=deck[i],ex=P[r.id];curModel=ex?ex.model:curModel;
+  $('#shR-src').textContent='@'+r.c+' · ♥ '+fmt(r.likes)+(r.views?' · ▶ '+r.views:'');
+  $('#shR-m').innerHTML=MODELS.map(m=>'<button class="chip" data-m="'+m+'" aria-pressed="'+(m===curModel)+'">'+m+'</button>').join('');
+  $('#shR-o').value=ex?ex.outfit:($('#shR-o').value||'1');$('#shR-n').value=ex?ex.note:'';open('shR');
+}
+function listText(){return 'Recreate these:\n'+Object.entries(P).map(([id,v])=>{const r=R.find(x=>x.id===id);return 'https://www.instagram.com/reel/'+id+'/ (@'+(r?r.c:'?')+') - '+v.model+', outfit '+v.outfit+(v.note?' - '+v.note:'')}).join('\n')}
+function renderList(){
+  const e=Object.entries(P);$('#lst').innerHTML=e.length?e.map(([id,v])=>{const r=R.find(x=>x.id===id);return '<div class="item"><div>@'+esc(r?r.c:'?')+'<small>'+esc(v.model)+' · Outfit '+esc(v.outfit)+(v.note?' · '+esc(v.note):'')+'</small></div><button data-rm="'+esc(id)+'" aria-label="Remove">✕</button></div>'}).join(''):'<p class="mute">Nothing yet. Swipe right on a reel to add it.</p>';
+  $('#out').style.display='none';
+}
+function fillFilter(){
+  $('#fC').innerHTML='<option value="">All creators</option>'+[...new Set(R.map(r=>r.c))].map(c=>'<option value="'+esc(c)+'">@'+esc(c)+' ('+R.filter(r=>r.c===c).length+')</option>').join('');
+  $('#fC').value=F.c;$('#fS').value=F.s;$('#fM').value=F.m;$('#fP').value=F.p;
+}
 document.addEventListener('click',async e=>{
-  const b=e.target.closest('button');if(!b)return;
-  if(b.dataset.play){const w=document.createElement('div');w.className='vid';const f=document.createElement('iframe');f.src='https://www.instagram.com/reel/'+b.dataset.play+'/embed/';f.allow='autoplay; encrypted-media';f.title='Reel';w.append(f);b.replaceWith(w)}
-  else if(b.dataset.pick){openSheet(b.dataset.pick)}
-  else if(b.dataset.m){curModel=b.dataset.m;document.querySelectorAll('#sh-models button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.m===curModel))}
-  else if(b.id==='sh-cancel'){closeSheet()}
-  else if(b.id==='sh-remove'){const id=curId;delete P[id];save();closeSheet();refreshBtn(id);bar()}
-  else if(b.id==='sh-add'){const id=curId;P[id]={model:curModel,outfit:$('#sh-outfit').value,note:$('#sh-note').value.trim()};save();closeSheet();refreshBtn(id);bar()}
-  else if(b.id==='clear'){P={};save();render();bar()}
-  else if(b.id==='copy'){
-    if(!Object.keys(P).length)return;const t=listText(),ta=$('#out');ta.value=t;ta.style.display='block';ta.select();
-    try{await navigator.clipboard.writeText(t)}catch{try{document.execCommand('copy')}catch{}}
-    b.textContent='Copied';setTimeout(()=>b.textContent='Copy list',1600);
-  }
+  const b=e.target.closest('button');if(!b)return;const id=b.id;
+  if(id==='bNo'){const el=$('#top');if(el)fly(el,-1,'pass')}
+  else if(id==='bYes')openR();
+  else if(id==='bOpen'){const r=deck[i];if(r)window.open('https://www.instagram.com/reel/'+r.id+'/','_blank','noopener')}
+  else if(id==='bUndo'){const h=hist.pop();if(h){i--;if(h.kind==='pass'){seen.delete(h.id);lsSet('seen',[...seen])}else{delete P[h.id];lsSet('picks2',P)}draw()}}
+  else if(id==='bFilter'){fillFilter();open('shF')}
+  else if(id==='shF-ok'){F={c:$('#fC').value,s:$('#fS').value,m:$('#fM').value,p:$('#fP').value};lsSet('filt',F);shut('shF');build()}
+  else if(id==='bList'||id==='bList2'){renderList();open('shL')}
+  else if(id==='shL-x')shut('shL');
+  else if(id==='shL-clear'){P={};lsSet('picks2',P);renderList();bar()}
+  else if(id==='shL-copy'){if(!Object.keys(P).length)return;const t=listText(),ta=$('#out');ta.value=t;ta.style.display='block';ta.select();try{await navigator.clipboard.writeText(t);toast('Copied')}catch{try{document.execCommand('copy');toast('Copied')}catch{toast('Select and copy the text')}}}
+  else if(b.dataset.rm){delete P[b.dataset.rm];lsSet('picks2',P);renderList();bar()}
+  else if(id==='bAgain'){seen=new Set();lsSet('seen',[]);build()}
+  else if(b.dataset.m){curModel=b.dataset.m;document.querySelectorAll('#shR-m .chip').forEach(x=>x.setAttribute('aria-pressed',x.dataset.m===curModel))}
+  else if(id==='shR-x')shut('shR');
+  else if(id==='shR-ok'){const r=deck[i];P[r.id]={model:curModel,outfit:$('#shR-o').value,note:$('#shR-n').value.trim()};lsSet('picks2',P);shut('shR');const el=$('#top');seen.add(r.id);lsSet('seen',[...seen]);if(el)fly(el,1,'yes');toast('Added · '+curModel)}
 });
-$('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
-for(const id of ['fc','fs','fm','fp'])$('#'+id).addEventListener('change',render);
-render();bar();
+for(const s of ['shR','shF','shL'])$('#'+s).addEventListener('click',e=>{if(e.target.id===s)shut(s)});
+addEventListener('keydown',e=>{if(document.querySelector('.sheet.open')){if(e.key==='Escape')document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('open'));return}
+  if(e.key==='ArrowLeft')$('#bNo').click();else if(e.key==='ArrowRight')$('#bYes').click();else if(e.key==='Enter'){const p=document.querySelector('#top [data-play]');p&&p.click()}});
+build();
 }
 </script>
 </body>
