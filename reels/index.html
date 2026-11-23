@@ -14,11 +14,15 @@ select,button{font:inherit;color:inherit;background:var(--card);border:1px solid
 button{cursor:pointer;font-weight:600}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;padding:16px;max-width:1300px;margin:0 auto}
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
-.thumb{position:relative;aspect-ratio:9/14;background:linear-gradient(160deg,#3a1f2a,#120f16 60%,#1d1626);display:grid;place-items:center;border:0;border-radius:0;width:100%;padding:0}
+.thumb{position:relative;background:linear-gradient(160deg,#3a1f2a,#120f16 60%,#1d1626);display:grid;place-items:center;border:0;border-radius:0;width:100%;padding:0}
 .thumb .play{width:64px;height:64px;border-radius:50%;background:var(--hot);display:grid;place-items:center;font-size:26px;padding-left:5px}
 .thumb .who{position:absolute;left:12px;top:10px;font-weight:700;font-size:14px;background:rgba(0,0,0,.5);padding:4px 10px;border-radius:999px}
 .thumb .st{position:absolute;left:12px;bottom:10px;font-size:13px;color:#fff;opacity:.9}
-iframe{width:100%;height:600px;border:0;background:#000;display:block}
+.vid{position:relative;width:100%;aspect-ratio:3/4.95;overflow:hidden;background:#000}
+.vid iframe{position:absolute;border:0;width:147%;left:-23.5%;top:-80px;height:1000px;background:#000}
+.nope{aspect-ratio:3/4.95;display:grid;place-items:center;text-align:center;padding:16px;color:var(--mute);font-size:14px;background:#111}
+.nope a{display:inline-block;margin-top:10px;color:#fff;border:1px solid #555;padding:10px 14px;border-radius:999px;text-decoration:none;font-weight:600}
+.thumb{aspect-ratio:3/4.95}
 .info{padding:10px 12px;display:grid;gap:8px}
 .cap{font-size:14px;color:var(--mute);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.9em}
 .row{display:flex;gap:8px}.row button{flex:1}
@@ -35,9 +39,10 @@ textarea{width:100%;min-height:90px;background:var(--bg);color:var(--ink);border
   <h1>Reels Player</h1>
   <select id="fc" aria-label="Creator"></select>
   <select id="fs" aria-label="Sort"><option value="likes">Most likes</option><option value="views">Most views</option><option value="orig">As saved</option></select>
+  <select id="fp" aria-label="Playable"><option value="1">Playable only</option><option value="0">Include unplayable</option></select>
   <select id="fm" aria-label="Minimum likes"><option value="0">Any likes</option><option value="1000">1K+ likes</option><option value="5000">5K+ likes</option><option value="20000">20K+ likes</option></select>
 </div>
-<p class="note">Tap a card to play it here. Players come from Instagram, so a few may ask you to log in or say unavailable. Hit Recreate on the ones you want, then copy the list to me.</p>
+<p class="note">Tap a card to play it here. 119 of the 183 play; the other 64 have embedding turned off by Instagram and open on Instagram instead. Hit Recreate on the ones you want, then copy the list to me.</p>
 <main class="grid" id="grid"></main>
 
 <div class="bar">
@@ -235,6 +240,7 @@ DgGJ7x2zkGd|15|1.5K|Yeah we still exist lol
 DgGJFplTnLg|24|2.3K|He looked way too surprised 💀
 DgGKANiTOqf|11|1.4K|I can spoil him too, you know`};
 
+const BLOCKED=new Set(`Dd-xn_NseM2 Dd063kos9nc Dd5hCufMIxC Dd8D31cMkGB DdtFPiCS7Oe De0mxIXxM1e De1uRihMFyu De4iCnqRBuY De59BKBSqJx DeDA5oLRUzk DeDDr4ksH1P DeIv2R4SPXr DeNfW1yMG2q DePUPJPxJMK DeShFpWS-zT DeSjw7Ss_yc DeTIV_6sWkF DeWnmrmsMIA DecYJTBsksI DeiQGk7sSQC Dek1YItMR41 DeprhkyMcd- Derx-EsMMaW DeuHh4DRlVl DezGOmnRooB DfBhyMqR0Gn DfG9SXROrUf DfKAjUFMWNe DfL79Sryr-4 DfLIe9qyYNs DfPtK2EM3y5 DfQ8ivSxBkI DfXdE2rSbRT DfaQ5ECs-lO DfcjePORp4j Dfd0y7HvlbW DfoNQ87Rxwn Dfv77AdS1Z- Df-5ysoMqkZ DffZyLdt_mD Df_NN3LuMH9 Df_NPRBO1cu DgB3ZWwOs-f Df35F4OvhrS Df59yn0t5uL Df_QaMKNQ0_ DftJysKNF9k Dfv3Z06tApX DfyfCCWtE5E Df3GPexA_Mm Df8TBgboBJf Df8c0qOI8bt Df_Hw4QCmqm Df_PIHoIiYq DgBTefjgviR DgBZJmHoHjU DgBfhsJInAZ DgBmzbkoNcE DgBskggI2V0 DgETpnHIM9G DgEc_w8IWDv DgGHSBATz__ DgGHmqwztPn DgGI0KMzpIw`.split(' '));
 const num=s=>{if(!s)return 0;const m=String(s).replace(/,/g,'').match(/^([\d.]+)([KM]?)$/);return m?parseFloat(m[1])*(m[2]==='M'?1e6:m[2]==='K'?1e3:1):0};
 const fmt=n=>n>=1e6?(n/1e6).toFixed(1).replace(/\.0$/,'')+'M':n>=1e3?(n/1e3).toFixed(1).replace(/\.0$/,'')+'K':String(n);
 const R=[];let k=0;
@@ -248,9 +254,9 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 
 function render(){
   const c=$('#fc').value,s=$('#fs').value,m=+$('#fm').value;
-  let l=R.filter(r=>(!c||r.c===c)&&r.likes>=m);
+  const po=$('#fp').value==='1';let l=R.filter(r=>(!c||r.c===c)&&r.likes>=m&&(!po||!BLOCKED.has(r.id)));
   l.sort(s==='likes'?(a,b)=>b.likes-a.likes:s==='views'?(a,b)=>b.v-a.v:(a,b)=>a.o-b.o);
-  $('#grid').innerHTML=l.length?l.map(r=>'<div class="card" data-id="'+esc(r.id)+'"><button class="thumb" data-play="'+esc(r.id)+'" aria-label="Play reel by '+esc(r.c)+'"><span class="who">@'+esc(r.c)+'</span><span class="play">▶</span><span class="st">♥ '+fmt(r.likes)+(r.views?' · ▶ '+esc(r.views):'')+'</span></button><div class="info"><div class="cap">'+esc(r.cap)+'</div><div class="row"><button data-pick="'+esc(r.id)+'" class="'+(pick.has(r.id)?'sel':'')+'">'+(pick.has(r.id)?'✓ Picked':'Recreate')+'</button></div></div></div>').join(''):'<p class="note">Nothing matches that filter.</p>';
+  $('#grid').innerHTML=l.length?l.map(r=>'<div class="card" data-id="'+esc(r.id)+'">'+(BLOCKED.has(r.id)?'<div class="nope"><div>@'+esc(r.c)+' turned off playing this one outside Instagram.<br>♥ '+fmt(r.likes)+(r.views?' · ▶ '+esc(r.views):'')+'<br><a href="https://www.instagram.com/reel/'+esc(r.id)+'/" target="_blank" rel="noopener">Open on Instagram</a></div></div>':'<button class="thumb" data-play="'+esc(r.id)+'" aria-label="Play reel by '+esc(r.c)+'"><span class="who">@'+esc(r.c)+'</span><span class="play">▶</span><span class="st">♥ '+fmt(r.likes)+(r.views?' · ▶ '+esc(r.views):'')+'</span></button>')+'<div class="info"><div class="cap">'+esc(r.cap)+'</div><div class="row"><button data-pick="'+esc(r.id)+'" class="'+(pick.has(r.id)?'sel':'')+'">'+(pick.has(r.id)?'✓ Picked':'Recreate')+'</button></div></div></div>').join(''):'<p class="note">Nothing matches that filter.</p>';
 }
 function bar(){
   $('#cnt').textContent=pick.size+' picked';
@@ -261,7 +267,7 @@ function listText(){
 }
 document.addEventListener('click',async e=>{
   const b=e.target.closest('button');if(!b)return;
-  if(b.dataset.play){const f=document.createElement('iframe');f.src='https://www.instagram.com/reel/'+b.dataset.play+'/embed/';f.allow='autoplay; encrypted-media';f.setAttribute('loading','lazy');f.title='Reel';b.replaceWith(f)}
+  if(b.dataset.play){const w=document.createElement('div');w.className='vid';const f=document.createElement('iframe');f.src='https://www.instagram.com/reel/'+b.dataset.play+'/embed/';f.allow='autoplay; encrypted-media';f.title='Reel';w.append(f);b.replaceWith(w)}
   else if(b.dataset.pick){const id=b.dataset.pick;pick.has(id)?pick.delete(id):pick.add(id);save();b.classList.toggle('sel',pick.has(id));b.textContent=pick.has(id)?'✓ Picked':'Recreate';bar()}
   else if(b.id==='clear'){pick.clear();save();render();bar()}
   else if(b.id==='copy'){
@@ -270,7 +276,7 @@ document.addEventListener('click',async e=>{
     b.textContent='Copied';setTimeout(()=>b.textContent='Copy list',1600);
   }
 });
-for(const id of ['fc','fs','fm'])$('#'+id).addEventListener('change',render);
+for(const id of ['fc','fs','fm','fp'])$('#'+id).addEventListener('change',render);
 render();bar();
 }
 </script>
