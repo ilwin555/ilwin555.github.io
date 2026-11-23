@@ -77,6 +77,7 @@ textarea{width:100%;min-height:90px;background:var(--bg);color:var(--ink);border
 .btn.hot{color:#141414}.chip{border-width:1px;font-weight:500}.chip[aria-pressed=true]{background:var(--hot);color:#141414}
 .stamp{border-width:2px;font-size:20px;font-weight:600;border-radius:10px}.stamp.no{color:var(--ink)}
 .panel h2{font-size:21px;font-weight:600}
+.again{position:absolute;top:14px;right:14px;min-height:40px;padding:0 16px;border-radius:999px;background:#0b0b0ccc;border:1px solid #ffffff33;color:#fff;font-size:14px;font-weight:500}
 </style>
 </head>
 <body>
@@ -350,7 +351,7 @@ function attach(el){
     else{el.style.transform='';el.querySelectorAll('.stamp').forEach(s=>s.style.opacity=0)}
     if(moved)el._moved=true;setTimeout(()=>el._moved=false,0)};
   el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
-  el.addEventListener('click',e=>{if(el._moved)return;const b=e.target.closest('[data-play]');if(b)play(el)});
+  el.addEventListener('click',e=>{if(el._moved)return;if(e.target.closest('[data-again]')){el.querySelector('.vid').remove();play(el);return}const b=e.target.closest('[data-play]');if(b)play(el)});
 }
 function fly(el,dir,kind){
   if(busy)return;busy=true;const r=deck[i];
@@ -360,7 +361,7 @@ function fly(el,dir,kind){
 function play(el){
   if(el.querySelector('.vid'))return;
   const id=el.dataset.id;const f=el.querySelector('.face');
-  const v=document.createElement('div');v.className='vid';v.innerHTML='<iframe src="https://www.instagram.com/reel/'+id+'/embed/" allow="autoplay; encrypted-media" title="Reel"></iframe>';
+  const v=document.createElement('div');v.className='vid';v.innerHTML='<iframe src="https://www.instagram.com/reel/'+id+'/embed/" allow="autoplay; encrypted-media" title="Reel"></iframe><button class="again" data-again>Replay</button>';
   el.appendChild(v);
 }
 /* sheets */
