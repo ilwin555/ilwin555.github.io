@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reels Player</title>
+<style>
+:root{color-scheme:dark;--bg:#0c0b0d;--card:#17151a;--ink:#f5f3f6;--mute:#9d97a3;--line:#29262d;--hot:#ff4d5e}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,Segoe UI,sans-serif;padding-bottom:130px}
+.top{position:sticky;top:0;z-index:5;background:rgba(12,11,13,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:12px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+h1{font-size:20px;margin:0 8px 0 0}
+select,button{font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:12px;min-height:44px;padding:0 12px}
+button{cursor:pointer;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;padding:16px;max-width:1300px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.thumb{position:relative;aspect-ratio:9/14;background:linear-gradient(160deg,#3a1f2a,#120f16 60%,#1d1626);display:grid;place-items:center;border:0;border-radius:0;width:100%;padding:0}
+.thumb .play{width:64px;height:64px;border-radius:50%;background:var(--hot);display:grid;place-items:center;font-size:26px;padding-left:5px}
+.thumb .who{position:absolute;left:12px;top:10px;font-weight:700;font-size:14px;background:rgba(0,0,0,.5);padding:4px 10px;border-radius:999px}
+.thumb .st{position:absolute;left:12px;bottom:10px;font-size:13px;color:#fff;opacity:.9}
+iframe{width:100%;height:600px;border:0;background:#000;display:block}
+.info{padding:10px 12px;display:grid;gap:8px}
+.cap{font-size:14px;color:var(--mute);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.9em}
+.row{display:flex;gap:8px}.row button{flex:1}
+.sel{background:var(--hot);border-color:var(--hot);color:#fff}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:9;background:#17151aee;border-top:1px solid var(--line);padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bar b{margin-right:auto}
+textarea{width:100%;min-height:90px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:8px;font:13px monospace;display:none}
+.note{padding:0 16px;color:var(--mute);font-size:14px;max-width:1300px;margin:12px auto 0}
+:focus-visible{outline:3px solid var(--hot);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>Reels Player</h1>
+  <select id="fc" aria-label="Creator"></select>
+  <select id="fs" aria-label="Sort"><option value="likes">Most likes</option><option value="views">Most views</option><option value="orig">As saved</option></select>
+  <select id="fm" aria-label="Minimum likes"><option value="0">Any likes</option><option value="1000">1K+ likes</option><option value="5000">5K+ likes</option><option value="20000">20K+ likes</option></select>
+</div>
+<p class="note">Tap a card to play it here. Players come from Instagram, so a few may ask you to log in or say unavailable. Hit Recreate on the ones you want, then copy the list to me.</p>
+<main class="grid" id="grid"></main>
+
+<div class="bar">
+  <b id="cnt">0 picked</b>
+  <select id="model" aria-label="Model"><option>Kayla</option><option>Winnie</option><option>Lila</option></select>
+  <select id="outfit" aria-label="Outfit"><option value="9">Outfit 1</option><option value="10">Outfit 2</option><option value="11">Outfit 3</option></select>
+  <button id="copy">Copy list</button><button id="clear">Clear</button>
+  <textarea id="out" readonly></textarea>
+</div>
+
+<script>
+{
+const RAW={
+oylixxl:`Dd-xn_NseM2|3629|144K|😍 think im getting fat
+Dd063kos9nc|4361|171K|dont break 👀
+Dd3FKUGSsuZ|2764|125K|🤭
+Dd3jK9zs195|1935|127K|lol 🤭
+Dd5hCufMIxC|1269|98.3K|after 2 drinks 😝
+Dd6KQ5dswB6|6793|236K|😍
+Dd8BIluyYpR|5764|149K|Dress 1 or 2? 😍
+Dd8D31cMkGB|9511|486K|us after one sip 😝
+Ddr7b5TSXvX|3096|72.2K|i'm not kidding 😝
+DdtFPiCS7Oe|2282|114K|5 mins later 🤭
+DdunYG9y_8j|11000|697K|i and my cousin 🤭
+DdvNcQ9SFzP|3524|286K|love it 🤭
+DdxgXS9RVOv|21000|1.7M|no way 🤭
+DdxmFhlsDu_|1245|113K|is he blind? 🤭😅
+DdyRmMBMaHn|906|106K|✨
+De0mxIXxM1e|99000|2.5M|lol he failed 🤦‍♀️🤭
+De1uRihMFyu|28000|757K|lol 🤭
+De4iCnqRBuY|2129|189K|haha
+De4ik2mxxOe|5020|274K|lol 🤭
+De59BKBSqJx|11000|276K|🤭
+De9AHpUR8mP|5748|291K|🤭
+DeAbCcLy0-5|3884|238K|love cleaning ✨
+DeAkDC7sg0o|2696|198K|😍Would you?
+DeBP8vrsrSH|2050|113K|looking good ✨
+DeBkNYjy6Xx|2608|220K|😍
+DeDA5oLRUzk|4812|227K|not okay lol 🤭
+DeDDr4ksH1P|4125|267K|cousin good tho 🤭
+DeE6MFAyMxj|143000|2.3M|bless ✨
+DeIv2R4SPXr|3990|364K|😝
+DeNYBFeytQt|1793|116K|hii 😜
+DeNfW1yMG2q|2205|118K|i love this dress 😝
+DePUPJPxJMK|2874|145K|😝
+DePX8QjRqgN|3886|329K|no i cant finish it lol 😝
+DePcBA_xtZM|3785|219K|its always that one drink 😝
+DeShFpWS-zT|6022|203K|Good Morning ✨😜
+DeSjw7Ss_yc|11000|380K|Workout day ✨
+DeTIV_6sWkF|122000|3.8M|😜
+DeT_TE1M7DM|4875|295K|love golf 🤭
+DeWnmrmsMIA|13000|321K|she aint it 😜
+DecUvIlRjZ6|1052|99.6K|hmm 🤭
+DecYJTBsksI|2053|138K|🤭
+DeiLyX6Rjxn|22000|421K|hmm 👀
+DeiQGk7sSQC|22000|658K|bye bestie 🤭
+DeiXarwsz58|2557|137K|after 1 drink 😝
+DejX0OnxCPz|1401|111K|😝
+Dek1YItMR41|4527|168K|train trip ✨
+DenD8FOyg9Q|15000|409K|fr 😝
+DenNlVWsgmg|3098|159K|🥰
+Dep5y7GsVPy|3622|201K|no way lol
+DepoKP7SilO|3414|145K|hehe 😈
+DeprhkyMcd-|32000|1.4M|🙈
+Der1cnWM_rg|3848|307K|he was shocked lol 🤭
+Derx-EsMMaW|4242|219K|i can still cook hehe 😝
+DeuHh4DRlVl|9343|296K|just eat that 😉
+Dexf_s3SXgE|14000|531K|no way lol 🤭
+DezGOmnRooB|4260|240K|crazy 🤭
+Df1AExbyeK-|5805|385K|😭
+Df1APWSyrSj|2400|126K|he just want sum 🤭
+Df1NeQ4Scn3|2321|140K|lol 🤭
+Df3dp21SFKP|73000|1.4M|he cant lift me up 😭
+Df7LuuUsyTS|765|51.3K|im not going to the gym anymore 😭
+Df8ej4byU3j|17000|402K|not texas btw 😂
+DfANfpJR8G6|145000|2.1M|yeahh 😝
+DfBhyMqR0Gn|2839|234K|didnt expect dat lol
+DfG9SXROrUf|9043|325K|no way
+DfKAjUFMWNe|5691|255K|🤭
+DfL79Sryr-4|8380|396K|Halloween 🎃
+DfLFrHwSI3m|5748|211K|no way
+DfLIe9qyYNs|16000|326K|you aint going anywhere 🤭
+DfPtK2EM3y5|6676|676K|i was just spotting 🤭
+DfQ8ivSxBkI|6439|160K|❤️
+DfUqdP6xDj1|5143|245K|no way lol 🤭
+DfXdE2rSbRT|7388|354K|idk why 🤦‍♀️
+DfZnDn3MQI3|2779|221K|omg lol
+DfaQ5ECs-lO|3083|192K|it was just a game 🤭
+DfbZ7JNxJZQ|3297|229K|haha 🤭
+DfcjePORp4j|1572|186K|lol 🤭
+DfckJ7kRQgm|10000|1.3M|little poor thing 🤭
+Dfd0y7HvlbW|149000|3.4M|guess what i was aiming? 👀
+Dfgao-kRim-|20000|445K|🤭
+Dfi_Elux6qM|2367|118K|she owe you a mirror pic 🤭
+DfoNQ87Rxwn|5798|183K|i'm not a stick tho 😂
+Dfv77AdS1Z-|2043|201K|he was ready 😂
+DfvocX8M_eN|5309|211K|lol 🤭
+DfyqJc6yKli|1955|190K|no way he came out quick
+DgA1UOmyX7o|1168|47.6K|no way he likes GTA 6 than me 😭
+DgEcq2bBeON|4687|89.8K|noo 😭
+DgEdPhNByCg|515|18.5K|no way i was thinking dat 😏
+DgFu1AfxGqF|1687|68.8K|☺️
+DgFuMFLxSNk|188|5.9K|just dive in 🏊🏻😂`,
+lilahannahh:`Df-5ysoMqkZ|58400||`,
+"m.ai_vu":`Dfc7G8RvqJu|9300|618K|ig it worked 😭
+DffZyLdt_mD|24100|2.7M|I just had to share this 😭`,
+berthamillerrose:`Df1HffKOSre|113|9.1K|
+Df1HxPdOGQq|168|10.4K|
+Df315mXqh5O|117|8.8K|
+Df31vs8qQ2i|169|9.9K|
+Df3stwou_LT|144|11.6K|
+Df6B_dzO59m|114|7.7K|
+Df6CE5XuyG3|336|38.5K|
+Df6CHNEOsIG|119|9.8K|
+Df8Zzu_O2Z-|426|26.2K|
+Df8rUcUue_W|155|16.4K|
+Df8rWWDOgNE|463|21K|
+Df8rcflu0JR|1107|60.8K|
+Df8w8PaOmxp|123|11.9K|
+Df8w_LsuaUA|60|11K|
+Df9lYR6qav5|288|51.7K|
+Df9lb-SqU0X|1039|90.6K|
+Df_NN3LuMH9|801|79.2K|
+Df_NPRBO1cu|949|63.7K|
+Df_NSabOkbB|141|11.5K|
+DgAlrgtqptn|1343|80.3K|
+DgAnDbEq-Vv|687|62.6K|
+DgB3RkzOKLr|181|11.2K|
+DgB3TNtOYEz|266|12.1K|
+DgB3ZWwOs-f|638|53.4K|
+DgCvG14qZzI|205|16.4K|
+DgEZfH8O-95|268|18.7K|
+DgEaCEfuNks|85|4.5K|
+DgEaEdnuHQo|43|2.6K|
+DgEaJbpOzSS|44|3.8K|
+DgEaQW2uZgB|174|7.1K|`,
+berthamillerapricot:`Df1LuWfs8bM|30|8.7K|
+Df1Lv6khUu1|32|14.4K|
+Df35CbGOaps|28|10.2K|
+Df35F4OvhrS|34|6.8K|
+Df59qY2N0Z9|43|8.4K|
+Df59yn0t5uL|58|8.7K|
+Df8zDncNSAM|440|31.6K|
+Df8zEuJNnb8|77|11.9K|
+Df8zJ6mNa3F|45|13.8K|
+Df9ibwjh8O-|4235|375K|
+Df_QaMKNQ0_|93|9.8K|
+Df_Qdv0tlYM|21|9K|
+Dfg1ztSh35r|12|5.1K|
+DfgInjXuaNV|9|5.8K|
+Dfi6uoyOwfI|12|5.2K|
+Dfi8zb0OQr8|53|26.8K|
+DflVeL7u02J|35|9.5K|
+DfldDEluWI2|24|14.1K|
+Dfn3oqBuKxw|33|11.7K|
+DfoByf4u10n|53|12.5K|
+Dfqb4OvJbpB|13000|952K|
+DfqbMQLBRbx|68|17.9K|
+DftJysKNF9k|33|13.1K|
+DftKyvutnro|35|14.1K|
+Dfv3Z06tApX|21|10.3K|
+Dfv4xQWNy_O|54|16.3K|
+Dfv6EUnN3pp|108|12.4K|
+DfydxC9tAIi|32|9.7K|
+DfyfCCWtE5E|62|10.1K|
+DgAoKadBXfJ|272|24K|
+DgB0Y67NoNK|28|3.8K|
+DgB0c8Dt7lZ|378|66.7K|
+DgCvWSGh6qE|367|61.8K|
+DgEWYSvNxIk|126|14K|
+DgEWaK4tuKR|29|6.2K|
+DgEWftVtjQ5|166|14.6K|`,
+xochxloe:`Df3GPexA_Mm|4871|188K|U have?
+Df8TBgboBJf|1174|93.3K|He is saying I’m crazy I think
+Df8c0qOI8bt|86|6.9K|He ded now haha
+Df_Hw4QCmqm|71|4K|True to be honest
+Df_PIHoIiYq|58|4.3K|What?!!
+DgBTefjgviR|66|2.6K|Was this funny :3
+DgBZJmHoHjU|39|2.6K|Was it funny :3
+DgBfhsJInAZ|222|13.7K|Trying to be a comedian
+DgBmzbkoNcE|45|2.5K|Did u get it ;3
+DgBskggI2V0|71|5.5K|Trying to be funny :3
+DgETpnHIM9G|35|2.6K|Was this funny
+DgEc_w8IWDv|51|2.6K|Get yo butt here`,
+"gracieh.birdie":`DgGH8H0z9_P|23|2.3K|Why would I care??
+DgGHLmRTo9c|16|2.9K|Just be a good person, that’s all
+DgGHSBATz__|21|2.8K|This man is NOT playing around
+DgGHcroTjry|24|2.8K|POV: you spotted the campus it girl
+DgGHmqwztPn|18|3.8K|I got the gas, don’t worry babe
+DgGHzV0T5J3|34|5.7K|I’m used to it by now lol
+DgGI0KMzpIw|25|3.5K|The look on his face omg
+DgGIjY6TOdI|15|3.1K|Okay that was a little awkward lol
+DgGIoQ_TDTY|25|3.4K|I guess I’m flattered lol
+DgGJ7x2zkGd|15|1.5K|Yeah we still exist lol
+DgGJFplTnLg|24|2.3K|He looked way too surprised 💀
+DgGKANiTOqf|11|1.4K|I can spoil him too, you know`};
+
+const num=s=>{if(!s)return 0;const m=String(s).replace(/,/g,'').match(/^([\d.]+)([KM]?)$/);return m?parseFloat(m[1])*(m[2]==='M'?1e6:m[2]==='K'?1e3:1):0};
+const fmt=n=>n>=1e6?(n/1e6).toFixed(1).replace(/\.0$/,'')+'M':n>=1e3?(n/1e3).toFixed(1).replace(/\.0$/,'')+'K':String(n);
+const R=[];let k=0;
+for(const [c,t] of Object.entries(RAW))for(const line of t.split('\n')){const [id,likes,views,...cap]=line.split('|');R.push({id,c,likes:+likes||0,views:views||'',v:num(views),cap:cap.join('|'),o:k++})}
+const $=s=>document.querySelector(s);
+let pick=new Set();try{pick=new Set(JSON.parse(localStorage.getItem('picks')||'[]'))}catch{}
+const save=()=>{try{localStorage.setItem('picks',JSON.stringify([...pick]))}catch{}};
+const cs=[...new Set(R.map(r=>r.c))];
+$('#fc').innerHTML='<option value="">All creators ('+R.length+')</option>'+cs.map(c=>'<option value="'+c+'">@'+c+' ('+R.filter(r=>r.c===c).length+')</option>').join('');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function render(){
+  const c=$('#fc').value,s=$('#fs').value,m=+$('#fm').value;
+  let l=R.filter(r=>(!c||r.c===c)&&r.likes>=m);
+  l.sort(s==='likes'?(a,b)=>b.likes-a.likes:s==='views'?(a,b)=>b.v-a.v:(a,b)=>a.o-b.o);
+  $('#grid').innerHTML=l.length?l.map(r=>'<div class="card" data-id="'+esc(r.id)+'"><button class="thumb" data-play="'+esc(r.id)+'" aria-label="Play reel by '+esc(r.c)+'"><span class="who">@'+esc(r.c)+'</span><span class="play">▶</span><span class="st">♥ '+fmt(r.likes)+(r.views?' · ▶ '+esc(r.views):'')+'</span></button><div class="info"><div class="cap">'+esc(r.cap)+'</div><div class="row"><button data-pick="'+esc(r.id)+'" class="'+(pick.has(r.id)?'sel':'')+'">'+(pick.has(r.id)?'✓ Picked':'Recreate')+'</button></div></div></div>').join(''):'<p class="note">Nothing matches that filter.</p>';
+}
+function bar(){
+  $('#cnt').textContent=pick.size+' picked';
+  const ta=$('#out');if(!pick.size)ta.style.display='none';
+}
+function listText(){
+  return 'Recreate these with '+$('#model').value+', outfit '+(+$('#outfit').value-8)+':\n'+[...pick].map(id=>{const r=R.find(x=>x.id===id);return 'https://www.instagram.com/reel/'+id+'/ (@'+r.c+')'}).join('\n');
+}
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.play){const f=document.createElement('iframe');f.src='https://www.instagram.com/reel/'+b.dataset.play+'/embed/';f.allow='autoplay; encrypted-media';f.setAttribute('loading','lazy');f.title='Reel';b.replaceWith(f)}
+  else if(b.dataset.pick){const id=b.dataset.pick;pick.has(id)?pick.delete(id):pick.add(id);save();b.classList.toggle('sel',pick.has(id));b.textContent=pick.has(id)?'✓ Picked':'Recreate';bar()}
+  else if(b.id==='clear'){pick.clear();save();render();bar()}
+  else if(b.id==='copy'){
+    if(!pick.size)return;const t=listText(),ta=$('#out');ta.value=t;ta.style.display='block';ta.select();
+    try{await navigator.clipboard.writeText(t)}catch{try{document.execCommand('copy')}catch{}}
+    b.textContent='Copied';setTimeout(()=>b.textContent='Copy list',1600);
+  }
+});
+for(const id of ['fc','fs','fm'])$('#'+id).addEventListener('change',render);
+render();bar();
+}
+</script>
+</body>
+</html>
