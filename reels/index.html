@@ -304,6 +304,7 @@ const toast=t=>{const e=$('#toast');e.textContent=t;e.classList.add('on');clearT
 function build(){
   let l=R.filter(r=>(!F.c||r.c===F.c)&&r.likes>=+F.m&&(F.p==='0'||!BLOCKED.has(r.id))&&!seen.has(r.id));
   l.sort(F.s==='likes'?(a,b)=>b.likes-a.likes:F.s==='views'?(a,b)=>b.v-a.v:(a,b)=>a.o-b.o);
+  l=[...l.filter(r=>!BLOCKED.has(r.id)),...l.filter(r=>BLOCKED.has(r.id))];
   deck=l;i=0;hist=[];draw();
 }
 function cardHTML(r){
