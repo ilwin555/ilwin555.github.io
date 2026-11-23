@@ -297,7 +297,7 @@ const R=[];let k=0;
 for(const [c,t] of Object.entries(RAW))for(const line of t.split('\n')){const [id,likes,views,...cap]=line.split('|');R.push({id,c,likes:+likes||0,views:views||'',v:num(views),cap:cap.join('|'),o:k++,h:[...c].reduce((a,ch)=>a*31+ch.charCodeAt(0),7)%360})}
 const lsGet=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||'null')??d}catch{return d}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
-let P=lsGet('picks2',{}),seen=new Set(lsGet('seen',[])),F=lsGet('filt',{c:'',s:'likes',m:'0',p:'1'});
+let P=lsGet('picks2',{}),seen=new Set(lsGet('seen',[])),F=lsGet('filt2',{c:'',s:'likes',m:'0',p:'0'});
 let deck=[],i=0,hist=[],curModel='Kayla';const MODELS=['Kayla','Winnie','Lila'];
 const toast=t=>{const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),1800)};
 
@@ -370,7 +370,7 @@ document.addEventListener('click',async e=>{
   else if(id==='bOpen'){const r=deck[i];if(r)window.open('https://www.instagram.com/reel/'+r.id+'/','_blank','noopener')}
   else if(id==='bUndo'){const h=hist.pop();if(h){i--;if(h.kind==='pass'){seen.delete(h.id);lsSet('seen',[...seen])}else{delete P[h.id];lsSet('picks2',P)}draw()}}
   else if(id==='bFilter'){fillFilter();open('shF')}
-  else if(id==='shF-ok'){F={c:$('#fC').value,s:$('#fS').value,m:$('#fM').value,p:$('#fP').value};lsSet('filt',F);shut('shF');build()}
+  else if(id==='shF-ok'){F={c:$('#fC').value,s:$('#fS').value,m:$('#fM').value,p:$('#fP').value};lsSet('filt2',F);shut('shF');build()}
   else if(id==='bList'||id==='bList2'){renderList();open('shL')}
   else if(id==='shL-x')shut('shL');
   else if(id==='shL-clear'){P={};lsSet('picks2',P);renderList();bar()}
